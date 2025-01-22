@@ -14,6 +14,7 @@
             margin: 0;
             background-color: #f4f4f4;
             text-align: center;
+            flex-direction: column;
         }
         h1 {
             font-size: 36px;
@@ -27,6 +28,16 @@
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .binario {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -35,13 +46,14 @@
     <div>
         <h1>Examen Bases de Datos</h1>
         <div id="contador" class="contador">00:00:00</div>
+        <div id="contadorBinario" class="binario">00000000000000000000000000000000</div>
     </div>
 
     <script>
         // Definir la fecha de destino: jueves 23 de enero a las 16:00
         const fechaObjetivo = new Date("2025-01-23T16:00:00").getTime();
 
-        // Actualizar el contador cada segundo
+        // Actualizar los contadores cada segundo
         const intervalo = setInterval(function() {
             // Obtener la fecha y hora actual
             const ahora = new Date().getTime();
@@ -62,10 +74,24 @@
                 (minutos < 10 ? "0" : "") + minutos + ":" +
                 (segundos < 10 ? "0" : "") + segundos;
 
+            // Calcular el valor binario para días, horas, minutos y segundos
+            const binarioDias = dias.toString(2).padStart(8, '0');
+            const binarioHoras = horas.toString(2).padStart(6, '0');
+            const binarioMinutos = minutos.toString(2).padStart(6, '0');
+            const binarioSegundos = segundos.toString(2).padStart(6, '0');
+            
+            // Mostrar el contador binario debajo del contador normal
+            document.getElementById("contadorBinario").innerHTML =
+                binarioDias + " : " +
+                binarioHoras + " : " +
+                binarioMinutos + " : " +
+                binarioSegundos;
+
             // Si la cuenta atrás llega a cero, mostrar un mensaje
             if (diferencia <= 0) {
                 clearInterval(intervalo);
                 document.getElementById("contador").innerHTML = "¡El examen ha comenzado!";
+                document.getElementById("contadorBinario").innerHTML = "00000000 : 000000 : 000000 : 000000"; // Detener el contador binario
             }
         }, 1000);
     </script>
