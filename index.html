@@ -12,14 +12,28 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
+            background-image: url('rodrygo-real-madrid-2019-20_1xjtadwqnnr871iqp7gw4q42jo-157563934.jpg');
+            background-size: cover; /* Hace que la imagen cubra toda la página */
+            background-position: center; /* Centra la imagen */
+            background-attachment: fixed; /* Hace que la imagen no se mueva al hacer scroll */
             text-align: center;
             flex-direction: column;
+            backdrop-filter: blur(5px); /* Agrega un efecto de desenfoque en el fondo */
         }
+
+        /* Estilo para el contenedor de texto */
+        .contenido {
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
         h1 {
             font-size: 36px;
             margin-bottom: 20px;
         }
+
         .contador {
             font-size: 48px;
             font-weight: bold;
@@ -30,6 +44,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
+
         .binario {
             font-size: 24px;
             font-weight: bold;
@@ -42,14 +57,14 @@
     </style>
 </head>
 <body>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/kS41G5Nyo8k?si=JXx7mT_GTl3zUpS5&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-<img src="rodrygo-real-madrid-2019-20_1xjtadwqnnr871iqp7gw4q42jo-157563934.jpg" alt="bases mejor asignatura by far">
+    <div class="contenido">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/kS41G5Nyo8k?si=JXx7mT_GTl3zUpS5&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-
-    <div>
-        <h1>Examen Bases de Datos</h1>
-        <div id="contador" class="contador">00:00:00</div>
-        <div id="contadorBinario" class="binario">00000000000000000000000000000000</div>
+        <div>
+            <h1>Examen Bases de Datos</h1>
+            <div id="contador" class="contador">00:00:00</div>
+            <div id="contadorBinario" class="binario">00000000000000000000000000000000</div>
+        </div>
     </div>
 
     <script>
@@ -98,6 +113,5 @@
             }
         }, 1000);
     </script>
-
 </body>
 </html>
