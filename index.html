@@ -3,11 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-        
+    <title>Examen Bases de Datos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('rodrygo-real-madrid-2019-20_1xjtadwqnnr871iqp7gw4q42jo-157563934.jpg');
+            background-size: cover; /* Hace que la imagen cubra toda la página */
+            background-position: center; /* Centra la imagen */
+            background-attachment: fixed; /* Hace que la imagen no se mueva al hacer scroll */
+            text-align: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px); /* Agrega un efecto de desenfoque en el fondo */
+        }
 
+        /* Estilo para el contenedor de texto */
+        .contenido {
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .contador {
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .binario {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>Pagina en mantenimiento</h1>
+   
+            <h1>Examen Bases de Datos</h1>
+            <div id="contador" class="contador">00:00:00</div>
+            <div id="contadorBinario" class="binario">00000000000000000000000000000000</div>
+        </div>
+    </div>
+
+    <script>
+        // Definir la fecha de destino: jueves 23 de enero a las 16:00
+        const fechaObjetivo = new Date("2025-01-23T16:00:00").getTime();
+
+        // Actualizar los contadores cada segundo
+        const intervalo = setInterval(function() {
+            // Obtener la fecha y hora actual
+            const ahora = new Date().getTime();
+            
+            // Calcular la diferencia entre la fecha objetivo y la actual
+            const diferencia = fechaObjetivo - ahora;
+            
+            // Calcular los días, horas, minutos y segundos
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+            
+            // Mostrar el tiempo restante en el formato "Días:Horas:Minutos:Segundos"
+            document.getElementById("contador").innerHTML =
+                (dias < 10 ? "0" : "") + dias + ":" +
+                (horas < 10 ? "0" : "") + horas + ":" +
+                (minutos < 10 ? "0" : "") + minutos + ":" +
+                (segundos < 10 ? "0" : "") + segundos;
+
+            // Calcular el valor binario para días, horas, minutos y segundos
+            const binarioDias = dias.toString(2).padStart(8, '0');
+            const binarioHoras = horas.toString(2).padStart(6, '0');
+            const binarioMinutos = minutos.toString(2).padStart(6, '0');
+            const binarioSegundos = segundos.toString(2).padStart(6, '0');
+            
+            // Mostrar el contador binario debajo del contador normal
+            document.getElementById("contadorBinario").innerHTML =
+                binarioDias + " : " +
+                binarioHoras + " : " +
+                binarioMinutos + " : " +
+                binarioSegundos;
+
+            // Si la cuenta atrás llega a cero, mostrar un mensaje
+            if (diferencia <= 0) {
+                clearInterval(intervalo);
+                document.getElementById("contador").innerHTML = "¡El examen ha comenzado!";
+                document.getElementById("contadorBinario").innerHTML = "00000000 : 000000 : 000000 : 000000"; // Detener el contador binario
+            }
+        }, 1000);
+    </script>
+  
+
 </body>
 </html>
