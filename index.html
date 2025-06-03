@@ -20,6 +20,10 @@
     .restart-btn { display: block; margin: 0 auto; font-size: 1rem; padding: 0.7rem 1.6rem; border: none; border-radius: 6px; background: #2196f3; color: #fff; cursor: pointer;}
     #uploader { margin: 2rem auto 1rem auto; max-width:600px; display: flex; flex-direction:column; gap:1rem; align-items:center;}
     #uploader label { font-weight: bold;}
+    #waitMsg {
+      color: #444; background: #fff9c4; border: 1px solid #ffe082; border-radius: 6px; padding: 0.5rem 1rem; margin-top: 1rem; font-size: 1rem; text-align: center;
+      display: none;
+    }
     @media (max-width: 600px) {
       .quiz-container { padding: 1rem 0.5rem;}
       .question { font-size: 1rem;}
@@ -34,6 +38,7 @@
     <label for="fileInput">Cargar archivo Excel (.xlsx) del quiz:</label>
     <input type="file" id="fileInput" accept=".xlsx,.xls" />
     <span id="uploadMsg"></span>
+    <div id="waitMsg">Cargando archivo, por favor espera unos segundos hasta que aparezca el quiz...</div>
   </div>
   <div class="quiz-container" id="quizContainer" style="display:none"></div>
   <script>
@@ -44,53 +49,64 @@
 
     document.getElementById('fileInput').addEventListener('change', handleFile, false);
 
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
     function handleFile(e) {
       const file = e.target.files[0];
       if (!file) return;
+      document.getElementById('waitMsg').style.display = "block";
+      document.getElementById('uploadMsg').textContent = "";
       const reader = new FileReader();
       reader.onload = function(event) {
-        const data = event.target.result;
-        const workbook = XLSX.read(data, {type: 'binary'});
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(sheet, {defval: ""});
-
-        // Procesar preguntas
-        questions = [];
-        for (const row of json) {
-          // Soporte columnas (según imagen: Questions, Answer 1, Score, Answer 2, Score.1, Answer 3, Score.2, Answer 4, Score.3)
-          const opts = [
-            row["Answer 1"] ?? "",
-            row["Answer 2"] ?? "",
-            row["Answer 3"] ?? "",
-            row["Answer 4"] ?? ""
-          ];
-          // Buscar cuál tiene Score==1
-          let scores = [
-            row["Score"] ?? 0,
-            row["Score.1"] ?? 0,
-            row["Score.2"] ?? 0,
-            row["Score.3"] ?? 0
-          ];
-          let answer = scores.findIndex(x => x == 1 || x === "1");
-          if (answer === -1) answer = 0; // Por si acaso
-          questions.push({
-            question: row["Questions"],
-            options: opts,
-            answer
-          });
-        }
-        if (questions.length === 0) {
-          document.getElementById('uploadMsg').textContent = "No se han detectado preguntas válidas en el archivo.";
-          document.getElementById('quizContainer').style.display = "none";
-        } else {
-          document.getElementById('quizContainer').style.display = "";
-          document.getElementById('uploader').style.display = "none";
-          selectedAnswers = Array(questions.length).fill(null);
-          current = 0;
-          quizCompleted = false;
-          renderQuiz();
-        }
+        setTimeout(() => { // Por si el archivo es grande, da tiempo a mostrar el mensaje
+          const data = event.target.result;
+          const workbook = XLSX.read(data, {type: 'binary'});
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const json = XLSX.utils.sheet_to_json(sheet, {defval: ""});
+          questions = [];
+          for (const row of json) {
+            const opts = [
+              row["Answer 1"] ?? "",
+              row["Answer 2"] ?? "",
+              row["Answer 3"] ?? "",
+              row["Answer 4"] ?? ""
+            ];
+            let scores = [
+              row["Score"] ?? 0,
+              row["Score.1"] ?? 0,
+              row["Score.2"] ?? 0,
+              row["Score.3"] ?? 0
+            ];
+            let answer = scores.findIndex(x => x == 1 || x === "1");
+            if (answer === -1) answer = 0;
+            questions.push({
+              question: row["Questions"],
+              options: opts,
+              answer
+            });
+          }
+          if (questions.length === 0) {
+            document.getElementById('uploadMsg').textContent = "No se han detectado preguntas válidas en el archivo.";
+            document.getElementById('quizContainer').style.display = "none";
+            document.getElementById('waitMsg').style.display = "none";
+          } else {
+            // ALEATORIZA el orden de las preguntas
+            shuffleArray(questions);
+            document.getElementById('quizContainer').style.display = "";
+            document.getElementById('uploader').style.display = "none";
+            selectedAnswers = Array(questions.length).fill(null);
+            current = 0;
+            quizCompleted = false;
+            document.getElementById('waitMsg').style.display = "none";
+            renderQuiz();
+          }
+        }, 150); // Pequeña pausa para asegurar que se muestre el mensaje antes de procesamiento
       };
       reader.readAsBinaryString(file);
     }
@@ -173,6 +189,8 @@
         selectedAnswers = Array(questions.length).fill(null);
         current = 0;
         quizCompleted = false;
+        // ALEATORIZA otra vez para un nuevo intento
+        shuffleArray(questions);
         renderQuiz();
       };
       container.appendChild(restartBtn);
