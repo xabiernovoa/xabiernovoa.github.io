@@ -17,7 +17,7 @@
     .nav-btn { font-size: 1rem; padding: 0.6rem 1.4rem; border: none; border-radius: 6px; background: #007acc; color: #fff; cursor: pointer; transition: background 0.2s;}
     .nav-btn:disabled { background: #bbb; cursor: not-allowed;}
     .result { font-size: 1.3rem; font-weight: bold; text-align: center; margin-bottom: 1.2rem;}
-    .restart-btn { display: block; margin: 0 auto; font-size: 1rem; padding: 0.7rem 1.6rem; border: none; border-radius: 6px; background: #2196f3; color: #fff; cursor: pointer;}
+    .restart-btn, #restartQuizBtn { display: block; margin: 1rem auto 0 auto; font-size: 1rem; padding: 0.7rem 1.6rem; border: none; border-radius: 6px; background: #2196f3; color: #fff; cursor: pointer;}
     #uploader { margin: 2rem auto 1rem auto; max-width:600px; display: flex; flex-direction:column; gap:1rem; align-items:center;}
     #uploader label { font-weight: bold;}
     #waitMsg {
@@ -41,6 +41,7 @@
     <div id="waitMsg">Cargando archivo, por favor espera unos segundos hasta que aparezca el quiz...</div>
   </div>
   <div class="quiz-container" id="quizContainer" style="display:none"></div>
+  <button id="restartQuizBtn" style="display:none;">Reiniciar quiz</button>
   <script>
     let questions = [];
     let current = 0;
@@ -48,6 +49,7 @@
     let quizCompleted = false;
 
     document.getElementById('fileInput').addEventListener('change', handleFile, false);
+    document.getElementById('restartQuizBtn').addEventListener('click', reiniciarQuiz, false);
 
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -63,7 +65,7 @@
       document.getElementById('uploadMsg').textContent = "";
       const reader = new FileReader();
       reader.onload = function(event) {
-        setTimeout(() => { // Por si el archivo es grande, da tiempo a mostrar el mensaje
+        setTimeout(() => {
           const data = event.target.result;
           const workbook = XLSX.read(data, {type: 'binary'});
           const sheetName = workbook.SheetNames[0];
@@ -95,20 +97,29 @@
             document.getElementById('uploadMsg').textContent = "No se han detectado preguntas válidas en el archivo.";
             document.getElementById('quizContainer').style.display = "none";
             document.getElementById('waitMsg').style.display = "none";
+            document.getElementById('restartQuizBtn').style.display = "none";
           } else {
-            // ALEATORIZA el orden de las preguntas
             shuffleArray(questions);
             document.getElementById('quizContainer').style.display = "";
             document.getElementById('uploader').style.display = "none";
+            document.getElementById('restartQuizBtn').style.display = "";
             selectedAnswers = Array(questions.length).fill(null);
             current = 0;
             quizCompleted = false;
             document.getElementById('waitMsg').style.display = "none";
             renderQuiz();
           }
-        }, 150); // Pequeña pausa para asegurar que se muestre el mensaje antes de procesamiento
+        }, 150);
       };
       reader.readAsBinaryString(file);
+    }
+
+    function reiniciarQuiz() {
+      selectedAnswers = Array(questions.length).fill(null);
+      current = 0;
+      quizCompleted = false;
+      shuffleArray(questions);
+      renderQuiz();
     }
 
     function renderQuiz() {
@@ -185,14 +196,7 @@
       const restartBtn = document.createElement('button');
       restartBtn.className = 'restart-btn';
       restartBtn.textContent = 'Volver a empezar el quiz';
-      restartBtn.onclick = () => {
-        selectedAnswers = Array(questions.length).fill(null);
-        current = 0;
-        quizCompleted = false;
-        // ALEATORIZA otra vez para un nuevo intento
-        shuffleArray(questions);
-        renderQuiz();
-      };
+      restartBtn.onclick = reiniciarQuiz;
       container.appendChild(restartBtn);
     }
   </script>
